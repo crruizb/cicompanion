@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  cicompanion_postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=user
+      - POSTGRES_DB=cicompanion
+      - TZ=UTC
+    ports:
+      - "5432:5432"
