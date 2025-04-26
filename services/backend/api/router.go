@@ -8,19 +8,21 @@ import (
 
 type Router struct {
 	*http.ServeMux
-	oauthConfig  *oauth2.Config
-	githubClient githubClient
+	oauthConfig *oauth2.Config
+	gc          githubClient
+	rs          reposStore
 }
 
-func NewRouter(oauthConfig *oauth2.Config, githubClient githubClient) *Router {
+func NewRouter(oauthConfig *oauth2.Config, gc githubClient, rs reposStore) *Router {
 	rt := &Router{
-		ServeMux:     http.NewServeMux(),
-		oauthConfig:  oauthConfig,
-		githubClient: githubClient,
+		ServeMux:    http.NewServeMux(),
+		oauthConfig: oauthConfig,
+		gc:          gc,
+		rs:          rs,
 	}
 
 	rt.HandleFunc("GET /repos", rt.getUserRepos)
-	rt.HandleFunc("POST /repos/{id}", rt.createRepo)
+	rt.HandleFunc("POST /repos", rt.createRepo)
 	rt.HandleFunc("DELETE /repos/{id}", rt.deleteRepo)
 	rt.HandleFunc("GET /dashboard/repos", rt.getDashboard)
 

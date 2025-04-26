@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-type UsersStore struct {
+type UsersPostgresStore struct {
 	DB *sql.DB
 }
 
-func NewUsersStore(db *sql.DB) *UsersStore {
-	return &UsersStore{
+func NewUsersPostgresStore(db *sql.DB) *UsersPostgresStore {
+	return &UsersPostgresStore{
 		DB: db,
 	}
 }
@@ -23,7 +23,7 @@ type User struct {
 	GithubPAT string `json:"githubPat" db:"github_pat"`
 }
 
-func (m UsersStore) GetUser(username string) (*User, error) {
+func (m UsersPostgresStore) GetUser(username string) (*User, error) {
 	query := `
 		SELECT id, username, github_pat FROM users
 		WHERE username = $1
@@ -44,7 +44,7 @@ func (m UsersStore) GetUser(username string) (*User, error) {
 	return user, nil
 }
 
-func (m UsersStore) InsertUser(username, githubPat string) (*User, error) {
+func (m UsersPostgresStore) InsertUser(username, githubPat string) (*User, error) {
 	query := `
 		INSERT INTO users (username, github_pat)
 		VALUES ($1, $2)

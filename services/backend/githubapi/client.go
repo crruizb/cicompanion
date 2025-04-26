@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 type GithubHttpClient struct{}
@@ -24,11 +25,11 @@ type GithubRepoActions struct {
 }
 
 type GithubWorkflowRuns struct {
-	Branch       string `json:"head_branch"`
-	DisplayTitle string `json:"display_title"`
-	Status       string `json:"status"`
-	Conclusion   string `json:"conclusion"`
-	// CreatedAt    time.Time `json:"created_at"`
+	Branch       string    `json:"head_branch"`
+	DisplayTitle string    `json:"display_title"`
+	Status       string    `json:"status"`
+	Conclusion   string    `json:"conclusion"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 func (c *GithubHttpClient) GetRepos(githubPat string) ([]GithubRepo, error) {

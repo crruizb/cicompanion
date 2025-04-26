@@ -58,10 +58,11 @@ func main() {
 		Scopes:       []string{},
 		Endpoint:     github.Endpoint,
 	}
-	us := data.NewUsersStore(db)
+	rs := data.NewReposPostgresStore(db)
+	us := data.NewUsersPostgresStore(db)
 	gc := githubapi.NewGithubHttpClient()
 
-	rt := api.NewRouter(githubOauthConfig, gc)
+	rt := api.NewRouter(githubOauthConfig, gc, rs)
 
 	excludePrefix := []string{"/auth/github/login", "/auth/callback"}
 	mw := middleware.With(

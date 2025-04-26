@@ -16,9 +16,14 @@ type githubClient interface {
 	GetActions(githubPat string, repoId int) (*githubapi.GithubRepoActions, error)
 }
 
+type reposStore interface {
+	AddRepo(repo data.Repo, userId string) error
+	GetRepos(userId string) ([]data.Repo, error)
+}
+
 func (rt *Router) getUserRepos(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(ContextUser).(*data.User)
-	repos, err := rt.githubClient.GetRepos(user.GithubPAT)
+	repos, err := rt.gc.GetRepos(user.GithubPAT)
 	if err != nil {
 		ServerErrorResponse(w, r, err)
 		return
@@ -28,26 +33,55 @@ func (rt *Router) getUserRepos(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) createRepo(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+	user := r.Context().Value(ContextUser).(*data.User)
+	repo := &data.Repo{}
+	err := ReadJSON(w, r, repo)
+	if err != nil {
+		BadRequestResponse(w, r, err)
+		return
+	}
+	err = rt.rs.AddRepo(*repo, user.Id)
+	if err != nil {
+		ServerErrorResponse(w, r, err)
+		return
+	}
+
+	WriteJSON(w, http.StatusAccepted, nil, nil)
 }
 
 func (rt *Router) deleteRepo(w http.ResponseWriter, r *http.Request) {
 	panic("unimplemented")
 }
 
+type DashboardDTO struct {
+	Id      int                         `json:"id"`
+	Name    string                      `json:"name"`
+	Actions githubapi.GithubRepoActions `json:"actions"`
+}
+
 func (rt *Router) getDashboard(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(ContextUser).(*data.User)
-	// repoIdStr := r.PathValue("repoId")
-	// repoId, err := strconv.Atoi(repoIdStr)
-	// if err != nil {
-	// 	BadRequestResponse(w, r, err)
-	// 	return
-	// }
-	actions, err := rt.githubClient.GetActions(user.GithubPAT, 344513894)
+	repos, err := rt.rs.GetRepos(user.Id)
 	if err != nil {
 		ServerErrorResponse(w, r, err)
 		return
 	}
 
-	WriteJSON(w, http.StatusOK, envelope{"actions": actions}, nil)
+	dashboardRepos := []DashboardDTO{}
+	for _, repo := range repos {
+		actions, err := rt.gc.GetActions(user.GithubPAT, repo.Id)
+		if err != nil {
+			ServerErrorResponse(w, r, err)
+			return
+		}
+
+		dashboardDto := DashboardDTO{
+			Id:      repo.Id,
+			Name:    repo.Name,
+			Actions: *actions,
+		}
+		dashboardRepos = append(dashboardRepos, dashboardDto)
+	}
+
+	WriteJSON(w, http.StatusOK, envelope{"repos": dashboardRepos}, nil)
 }
