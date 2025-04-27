@@ -64,8 +64,8 @@ func (rt *Router) oauthCallback(w http.ResponseWriter, r *http.Request) {
 
 	// WriteJSON(w, http.StatusOK, tokens, nil)
 	// Redirect the user to the frontend dashboard after successful login
-	// http.Redirect(w, r, "http://localhost:5173/", http.StatusFound)
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "http://localhost:5173/", http.StatusFound)
+	// http.Redirect(w, r, "/", http.StatusFound)
 }
 
 func generateStateOauthCookie(w http.ResponseWriter, source string) string {
