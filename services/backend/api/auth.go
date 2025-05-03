@@ -45,7 +45,7 @@ func (rt *Router) oauthCallback(w http.ResponseWriter, r *http.Request) {
 	user, _ := GetUserData(tokens)
 	// WriteJSON(w, http.StatusOK, tokens, nil)
 	http.SetCookie(w, &http.Cookie{
-		Name:     "github_pat",
+		Name:     "access_token",
 		Value:    tokens.AccessToken,
 		Path:     "/",
 		HttpOnly: true, // Prevent JavaScript access

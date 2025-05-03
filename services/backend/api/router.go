@@ -21,10 +21,10 @@ func NewRouter(oauthConfig *oauth2.Config, gc githubClient, rs reposStore) *Rout
 		rs:          rs,
 	}
 
-	rt.HandleFunc("GET /repos", rt.getUserRepos)
-	rt.HandleFunc("POST /repos", rt.createRepo)
-	rt.HandleFunc("DELETE /repos/{id}", rt.deleteRepo)
-	rt.HandleFunc("GET /dashboard/repos", rt.getDashboard)
+	rt.HandleFunc("GET /api/repos", rt.getUserRepos)
+	rt.HandleFunc("POST /api/repos", rt.createRepo)
+	rt.HandleFunc("DELETE /api/repos/{id}", rt.deleteRepo)
+	rt.HandleFunc("GET /api/dashboard/repos", rt.getDashboard)
 
 	rt.HandleFunc("GET /auth/github/login", rt.oauthLogin)
 	rt.HandleFunc("GET /auth/callback", rt.oauthCallback)
