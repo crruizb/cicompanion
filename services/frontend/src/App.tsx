@@ -22,7 +22,6 @@ function App() {
           Login with Github
         </Button>
       )}
-      {username && <h1>Welcome {username}</h1>}
 
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>

@@ -74,3 +74,21 @@ func (r *ReposPostgresStore) GetRepos(userId string) ([]Repo, error) {
 
 	return repos, nil
 }
+
+func (r *ReposPostgresStore) Deleterepo(repoId int, userId string) error {
+	query := `
+		DELETE FROM repos WHERE id = $1 and user_id = $2;
+	`
+
+	args := []any{repoId, userId}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := r.DB.ExecContext(ctx, query, args...)
+	if err != nil {
+		slog.Error("error deleting repo", "err", err.Error())
+		return err
+	}
+
+	return nil
+}

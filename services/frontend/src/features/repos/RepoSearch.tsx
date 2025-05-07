@@ -47,7 +47,7 @@ export default function RepoSearch({ repos, repoName, onRepoChange }: Props) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-xs justify-between"
+          className="w-xs justify-between "
         >
           {repoName
             ? repos.find((repo) => repo.name === repoName)?.name
@@ -55,7 +55,7 @@ export default function RepoSearch({ repos, repoName, onRepoChange }: Props) {
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-xs p-2 mx-5 border-1 rounded-md bg-white cursor-pointer">
+      <PopoverContent className="w-xs p-2 mx-5 border-1 rounded-md bg-white cursor-pointer z-50">
         <Command>
           <CommandInput placeholder="Search repo..." className="h-9" />
           <CommandList className="overflow-y-auto h-96">

@@ -36,7 +36,9 @@ export default function AddRepoModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Add repo</Button>
+        <Button variant="outline" className="cursor-pointer">
+          Add repo
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -54,6 +56,7 @@ export default function AddRepoModal() {
             type="submit"
             onClick={handleSubmit}
             disabled={!repo.displayName}
+            className="cursor-pointer"
           >
             Save changes
           </Button>

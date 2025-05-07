@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/cicompanion/data"
 	"github.com/cicompanion/githubapi"
@@ -19,6 +20,7 @@ type githubClient interface {
 type reposStore interface {
 	AddRepo(repo data.Repo, userId string) error
 	GetRepos(userId string) ([]data.Repo, error)
+	Deleterepo(repoId int, userId string) error
 }
 
 func (rt *Router) getUserRepos(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +52,21 @@ func (rt *Router) createRepo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) deleteRepo(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+	user := r.Context().Value(ContextUser).(*data.User)
+	repoIdStr := r.PathValue("id")
+	repoId, err := strconv.Atoi(repoIdStr)
+	if err != nil {
+		BadRequestResponse(w, r, err)
+		return
+	}
+
+	err = rt.rs.Deleterepo(repoId, user.Id)
+	if err != nil {
+		ServerErrorResponse(w, r, err)
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, nil, nil)
 }
 
 type DashboardDTO struct {

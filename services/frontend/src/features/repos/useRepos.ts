@@ -1,4 +1,4 @@
-import { addRepo, getDashboard, getRepos } from "@/services/repos";
+import { addRepo, deleteRepo, getDashboard, getRepos } from "@/services/repos";
 import { AddRepo } from "@/types/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -28,6 +28,22 @@ export function useAddRepo() {
   });
 
   return { createRepo };
+}
+
+export function useDeleteRepo() {
+  const queryClient = useQueryClient();
+  const { mutate: removeRepo } = useMutation({
+    mutationFn: (repoId: number) => deleteRepo(repoId),
+    onSuccess: () => {
+      toast.success("Repo removed successfully!");
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: () => {
+      toast.error("Could not remove the repo. Try again later.");
+    },
+  });
+
+  return { removeRepo };
 }
 
 export function useDashboard() {

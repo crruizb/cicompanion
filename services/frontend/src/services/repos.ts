@@ -31,6 +31,16 @@ export async function addRepo(repoId: number, displayName: string) {
   if (!res.ok) throw Error("Could not add Github repository");
 }
 
+export async function deleteRepo(repoId: number) {
+  const res = await fetch(`${API_URL}/repos/${repoId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  console.log(res);
+  if (!res.ok) throw Error("Could not add Github repository");
+}
+
 export async function getDashboard() {
   const res = await fetch(`${API_URL}/dashboard/repos`, {
     credentials: "include",
