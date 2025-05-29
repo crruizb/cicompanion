@@ -14,6 +14,10 @@ import (
 	"github.com/cicompanion/api/middleware"
 	"github.com/cicompanion/data"
 	"github.com/cicompanion/githubapi"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"golang.org/x/oauth2"
@@ -50,6 +54,18 @@ func main() {
 		panic(err)
 	}
 	defer db.Close()
+
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		panic(err)
+	}
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://db/migration",
+		"postgres", driver)
+	if err != nil {
+		panic(err)
+	}
+	m.Up()
 
 	var githubOauthConfig = &oauth2.Config{
 		RedirectURL:  config.oauthRedirectURL,

@@ -11,3 +11,6 @@ migratedown:
 
 new_migration:
 	migrate create -ext sql -dir db/migration -seq $(name)
+
+test:
+	go test -v -cover -short ./...

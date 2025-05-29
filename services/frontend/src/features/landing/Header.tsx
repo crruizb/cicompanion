@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/services/repos";
 import { Github, Activity } from "lucide-react";
 
 export const Header = () => {
   const loginWithGithub = () => {
-    window.location.href = "http://localhost:8080/auth/github/login";
+    window.location.href = `${API_URL}/auth/github/login`;
   };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm">
       <div className="mx-6 px-1">

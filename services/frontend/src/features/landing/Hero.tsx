@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Github } from "lucide-react";
+import { API_URL } from "@/services/repos";
 
 export const Hero = () => {
   const loginWithGithub = () => {
-    window.location.href = "http://localhost:8080/auth/github/login";
+    window.location.href = `${API_URL}/auth/github/login`;
   };
+
   return (
     <section className="py-20 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

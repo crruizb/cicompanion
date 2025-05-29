@@ -1,13 +1,13 @@
-let API_URL = "https://cicompanion.com/api";
+export let API_URL = "https://cicompanion.cristianruiz.dev/cc";
 const isLocalhost =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1";
 if (isLocalhost) {
-  API_URL = "http://localhost:8080/api";
+  API_URL = "http://localhost:8080";
 }
 
 export async function getRepos() {
-  const res = await fetch(`${API_URL}/repos`, {
+  const res = await fetch(`${API_URL}/api/repos`, {
     credentials: "include",
   });
 
@@ -18,7 +18,7 @@ export async function getRepos() {
 }
 
 export async function addRepo(repoId: number, displayName: string) {
-  const res = await fetch(`${API_URL}/repos`, {
+  const res = await fetch(`${API_URL}/api/repos`, {
     method: "POST",
     credentials: "include",
     body: JSON.stringify({
@@ -32,7 +32,7 @@ export async function addRepo(repoId: number, displayName: string) {
 }
 
 export async function deleteRepo(repoId: number) {
-  const res = await fetch(`${API_URL}/repos/${repoId}`, {
+  const res = await fetch(`${API_URL}/api/repos/${repoId}`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -42,7 +42,7 @@ export async function deleteRepo(repoId: number) {
 }
 
 export async function getDashboard() {
-  const res = await fetch(`${API_URL}/dashboard/repos`, {
+  const res = await fetch(`${API_URL}/api/dashboard/repos`, {
     credentials: "include",
   });
 
