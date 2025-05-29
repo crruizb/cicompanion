@@ -1,3 +1,4 @@
+import { Repo } from "@/types/types";
 import { useDashboard } from "../repos/useRepos";
 import ActionsBanner from "./ActionsBanner";
 import SpinnerLoader from "@/components/ui/SpinnerLoader";
@@ -9,7 +10,7 @@ export default function RepoList() {
       {isFetching ? <SpinnerLoader /> : ""}
       <section className="grid grid-cols-2 gap-4">
         {data &&
-          data.map((repo) => (
+          data.map((repo: Repo) => (
             <ActionsBanner
               key={repo.id}
               id={repo.id}

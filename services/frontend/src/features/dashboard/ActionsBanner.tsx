@@ -20,27 +20,9 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import toast from "react-hot-toast";
+import { Repo } from "@/types/types";
 
-interface WorkflowRun {
-  display_title: string;
-  status: string;
-  conclusion: string;
-  created_at: string;
-}
-
-interface Actions {
-  total_count: number;
-  workflow_runs: WorkflowRun[];
-}
-
-interface ActionsBannerProps {
-  id: number;
-  name: string;
-  actions: Actions;
-}
-
-const ActionsBanner: React.FC<ActionsBannerProps> = ({ id, name, actions }) => {
+const ActionsBanner: React.FC<Repo> = ({ id, name, actions }) => {
   const { removeRepo } = useDeleteRepo();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
