@@ -20,6 +20,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 interface WorkflowRun {
   display_title: string;
@@ -60,6 +61,11 @@ const ActionsBanner: React.FC<ActionsBannerProps> = ({ id, name, actions }) => {
   const formattedDate = latestRun?.created_at
     ? format(new Date(latestRun.created_at), "MMM d, yyyy 'at' h:mm a")
     : "N/A";
+
+  const handleSubmit = (id: number) => {
+    setShowDeleteDialog(false);
+    removeRepo(id);
+  };
 
   return (
     <Card
@@ -149,7 +155,7 @@ const ActionsBanner: React.FC<ActionsBannerProps> = ({ id, name, actions }) => {
             <Button
               variant="destructive"
               className="cursor-pointer"
-              onClick={() => removeRepo(id)}
+              onClick={() => handleSubmit(id)}
             >
               Delete
             </Button>

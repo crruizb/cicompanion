@@ -10,6 +10,7 @@ import {
 import { useAddRepo, useRepos } from "./useRepos";
 import RepoSearch from "./RepoSearch";
 import React from "react";
+import { CirclePlus } from "lucide-react";
 
 export default function AddRepoModal() {
   const [repo, setRepo] = React.useState<{
@@ -36,8 +37,10 @@ export default function AddRepoModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="cursor-pointer">
-          Add repo
+        <Button variant="outline" className="cursor-pointer border-blue-300">
+          <span className="flex items-center gap-2">
+            <CirclePlus className="text-blue-400" /> Add repo
+          </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

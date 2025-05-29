@@ -34,9 +34,9 @@ export function useDeleteRepo() {
   const queryClient = useQueryClient();
   const { mutate: removeRepo } = useMutation({
     mutationFn: (repoId: number) => deleteRepo(repoId),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Repo removed successfully!");
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: () => {
       toast.error("Could not remove the repo. Try again later.");
@@ -47,10 +47,10 @@ export function useDeleteRepo() {
 }
 
 export function useDashboard() {
-  const { data, error } = useQuery({
+  const { data, error, isFetching } = useQuery({
     queryKey: ["dashboard"],
     queryFn: () => getDashboard(),
   });
 
-  return { data, error };
+  return { data, error, isFetching };
 }
