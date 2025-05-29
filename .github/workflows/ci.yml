@@ -21,7 +21,7 @@ jobs:
           go-version: 1.23
 
       - name: Run test
-        working-directory: backend
+        working-directory: services/backend
         run: make test
 
   deploy:
@@ -42,7 +42,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        working-directory: backend
+        working-directory: services/backend
         run: |
           docker build -t cicompanion:$IMAGE_TAG .
           docker tag cicompanion:$IMAGE_TAG cicompanion:latest
