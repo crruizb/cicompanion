@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 const Dashboard: React.FC = () => {
-  const username = Cookies.get("username");
+  const username = Cookies.get("ci_username");
 
   const navigate = useNavigate();
 

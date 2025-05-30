@@ -27,7 +27,7 @@ func (rt *Router) oauthLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *Router) oauthCallback(w http.ResponseWriter, r *http.Request) {
-	oauthState, _ := r.Cookie("oauthstate")
+	oauthState, _ := r.Cookie("ci_oauthstate")
 	if r.FormValue("state") != oauthState.Value {
 		slog.Error("invalid oauth state")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -45,21 +45,23 @@ func (rt *Router) oauthCallback(w http.ResponseWriter, r *http.Request) {
 	user, _ := GetUserData(tokens)
 	// WriteJSON(w, http.StatusOK, tokens, nil)
 	http.SetCookie(w, &http.Cookie{
-		Name:     "access_token",
+		Name:     "ci_access_token",
 		Value:    tokens.AccessToken,
 		Path:     "/",
 		HttpOnly: true, // Prevent JavaScript access
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
+		Domain:   rt.backendDomain,
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "username",
+		Name:     "ci_username",
 		Value:    user.Username,
 		Path:     "/",
 		HttpOnly: false, // Prevent JavaScript access
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
+		Domain:   rt.backendDomain,
 	})
 
 	// WriteJSON(w, http.StatusOK, tokens, nil)
@@ -74,7 +76,7 @@ func generateStateOauthCookie(w http.ResponseWriter, source string) string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := fmt.Sprintf("%s:%s", base64.URLEncoding.EncodeToString(b), source)
-	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration, HttpOnly: true, Path: "/"}
+	cookie := http.Cookie{Name: "ci_oauthstate", Value: state, Expires: expiration, HttpOnly: true, Path: "/"}
 	http.SetCookie(w, &cookie)
 
 	return state

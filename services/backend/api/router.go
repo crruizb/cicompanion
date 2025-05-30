@@ -8,19 +8,21 @@ import (
 
 type Router struct {
 	*http.ServeMux
-	oauthConfig *oauth2.Config
-	gc          githubClient
-	rs          reposStore
-	frontendURL string
+	oauthConfig   *oauth2.Config
+	gc            githubClient
+	rs            reposStore
+	frontendURL   string
+	backendDomain string
 }
 
-func NewRouter(oauthConfig *oauth2.Config, gc githubClient, rs reposStore, frontendURL string) *Router {
+func NewRouter(oauthConfig *oauth2.Config, gc githubClient, rs reposStore, frontendURL, backendDomain string) *Router {
 	rt := &Router{
-		ServeMux:    http.NewServeMux(),
-		oauthConfig: oauthConfig,
-		gc:          gc,
-		rs:          rs,
-		frontendURL: frontendURL,
+		ServeMux:      http.NewServeMux(),
+		oauthConfig:   oauthConfig,
+		gc:            gc,
+		rs:            rs,
+		frontendURL:   frontendURL,
+		backendDomain: backendDomain,
 	}
 
 	rt.HandleFunc("GET /api/repos", rt.getUserRepos)

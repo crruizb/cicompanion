@@ -16,7 +16,7 @@ import (
 
 const (
 	authorizationHeader     = "authorization"
-	cookieAuthorizationName = "access_token"
+	cookieAuthorizationName = "ci_access_token"
 	authorizationPrefix     = "bearer"
 )
 

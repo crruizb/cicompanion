@@ -34,6 +34,7 @@ type config struct {
 	dbName             string
 	dbPort             string
 	frontendURL        string
+	backendDomain      string
 }
 
 func main() {
@@ -48,6 +49,7 @@ func main() {
 	flag.StringVar(&config.dbName, "db-name", os.Getenv("DB_NAME"), "Db name")
 	flag.StringVar(&config.dbPort, "db-port", os.Getenv("DB_PORT"), "Db port")
 	flag.StringVar(&config.frontendURL, "frontend-url", os.Getenv("FRONTEND_URL"), "Frontend url for redirect")
+	flag.StringVar(&config.backendDomain, "backend-domain", os.Getenv("BACKEND_DOMAIN"), "Backend domain for cookies")
 
 	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", config.dbUsername, config.dbPassword, config.dbHost, config.dbPort, config.dbName)
 	db, err := openDB(dsn)
@@ -79,7 +81,7 @@ func main() {
 	us := data.NewUsersPostgresStore(db)
 	gc := githubapi.NewGithubHttpClient()
 
-	rt := api.NewRouter(githubOauthConfig, gc, rs, config.frontendURL)
+	rt := api.NewRouter(githubOauthConfig, gc, rs, config.frontendURL, config.backendDomain)
 
 	excludePrefix := []string{"/auth/github/login", "/auth/callback"}
 	mw := middleware.With(
