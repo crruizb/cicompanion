@@ -37,10 +37,7 @@ type config struct {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		panic("Error loading .env file")
-	}
+	godotenv.Load()
 	config := config{}
 	flag.StringVar(&config.oauthRedirectURL, "redirect-url", os.Getenv("REDIRECT_URL"), "Oauth redirect url")
 	flag.StringVar(&config.githubClientId, "github-clientid", os.Getenv("GITHUB_CLIENT_ID"), "Github client id")
