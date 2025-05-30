@@ -1,4 +1,4 @@
-export let API_URL = "https://cicompanion.cristianruiz.dev/cc";
+export let API_URL = "https://api.cristianruiz.dev/cc";
 const isLocalhost =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1";
