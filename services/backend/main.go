@@ -49,7 +49,7 @@ func main() {
 	flag.StringVar(&config.dbPort, "db-port", os.Getenv("DB_PORT"), "Db port")
 	flag.StringVar(&config.frontendURL, "frontend-url", os.Getenv("FRONTEND_URL"), "Frontend url for redirect")
 
-	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", config.dbUsername, config.dbPassword, config.dbPort, config.dbHost, config.dbName)
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", config.dbUsername, config.dbPassword, config.dbHost, config.dbPort, config.dbName)
 	db, err := openDB(dsn)
 	if err != nil {
 		panic(err)
@@ -83,7 +83,7 @@ func main() {
 
 	excludePrefix := []string{"/auth/github/login", "/auth/callback"}
 	mw := middleware.With(
-		middleware.CorsMiddleware(),
+		middleware.CorsMiddleware(config.frontendURL),
 		middleware.Auth(us, excludePrefix),
 	)
 
