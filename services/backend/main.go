@@ -32,6 +32,8 @@ type config struct {
 	dbPassword         string
 	dbHost             string
 	dbName             string
+	dbPort             string
+	frontendURL        string
 }
 
 func main() {
@@ -47,8 +49,10 @@ func main() {
 	flag.StringVar(&config.dbPassword, "db-password", os.Getenv("DB_PASSWORD"), "Db password")
 	flag.StringVar(&config.dbHost, "db-host", os.Getenv("DB_HOST"), "Db host")
 	flag.StringVar(&config.dbName, "db-name", os.Getenv("DB_NAME"), "Db name")
+	flag.StringVar(&config.dbPort, "db-port", os.Getenv("DB_PORT"), "Db port")
+	flag.StringVar(&config.frontendURL, "frontend-url", os.Getenv("FRONTEND_URL"), "Frontend url for redirect")
 
-	dsn := fmt.Sprintf("postgresql://%s:%s@%s:5432/%s?sslmode=disable", config.dbUsername, config.dbPassword, config.dbHost, config.dbName)
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", config.dbUsername, config.dbPassword, config.dbPort, config.dbHost, config.dbName)
 	db, err := openDB(dsn)
 	if err != nil {
 		panic(err)
@@ -78,7 +82,7 @@ func main() {
 	us := data.NewUsersPostgresStore(db)
 	gc := githubapi.NewGithubHttpClient()
 
-	rt := api.NewRouter(githubOauthConfig, gc, rs)
+	rt := api.NewRouter(githubOauthConfig, gc, rs, config.frontendURL)
 
 	excludePrefix := []string{"/auth/github/login", "/auth/callback"}
 	mw := middleware.With(

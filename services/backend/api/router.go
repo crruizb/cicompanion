@@ -11,14 +11,16 @@ type Router struct {
 	oauthConfig *oauth2.Config
 	gc          githubClient
 	rs          reposStore
+	frontendURL string
 }
 
-func NewRouter(oauthConfig *oauth2.Config, gc githubClient, rs reposStore) *Router {
+func NewRouter(oauthConfig *oauth2.Config, gc githubClient, rs reposStore, frontendURL string) *Router {
 	rt := &Router{
 		ServeMux:    http.NewServeMux(),
 		oauthConfig: oauthConfig,
 		gc:          gc,
 		rs:          rs,
+		frontendURL: frontendURL,
 	}
 
 	rt.HandleFunc("GET /api/repos", rt.getUserRepos)
