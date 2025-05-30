@@ -74,7 +74,7 @@ func generateStateOauthCookie(w http.ResponseWriter, source string) string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := fmt.Sprintf("%s:%s", base64.URLEncoding.EncodeToString(b), source)
-	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration, HttpOnly: true, Path: "/auth"}
+	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration, HttpOnly: true, Path: "/"}
 	http.SetCookie(w, &cookie)
 
 	return state
