@@ -49,8 +49,8 @@ func (rt *Router) oauthCallback(w http.ResponseWriter, r *http.Request) {
 		Value:    tokens.AccessToken,
 		Path:     "/",
 		HttpOnly: true, // Prevent JavaScript access
-		// SameSite: http.SameSiteStrictMode,
-		Secure: false, // Set to true in production with HTTPS
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
 	})
 
 	http.SetCookie(w, &http.Cookie{
@@ -58,8 +58,8 @@ func (rt *Router) oauthCallback(w http.ResponseWriter, r *http.Request) {
 		Value:    user.Username,
 		Path:     "/",
 		HttpOnly: false, // Prevent JavaScript access
-		// SameSite: http.SameSiteStrictMode,
-		Secure: false, // Set to true in production with HTTPS
+		SameSite: http.SameSiteNoneMode,
+		Secure:   true,
 	})
 
 	// WriteJSON(w, http.StatusOK, tokens, nil)
