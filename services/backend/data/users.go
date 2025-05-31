@@ -68,3 +68,28 @@ func (m UsersPostgresStore) InsertUser(username, githubPat string) (*User, error
 
 	return user, nil
 }
+
+func (m UsersPostgresStore) UpdateUserToken(username, githubPat string) (*User, error) {
+	query := `
+		UPDATE users SET github_pat = $2
+		WHERE username = $1
+		RETURNING id
+	`
+
+	args := []any{username, githubPat}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	user := &User{
+		Username: username,
+		GithubPAT: githubPat,
+	}
+
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Id)
+	if err != nil {
+		slog.Error("error updating user", "err", err.Error())
+		return nil, err
+	}
+
+	return user, nil
+}

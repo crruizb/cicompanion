@@ -28,6 +28,7 @@ var (
 type UserStore interface {
 	GetUser(username string) (*data.User, error)
 	InsertUser(username, githubPat string) (*data.User, error)
+	UpdateUserToken(username, githubPat string) (*data.User, error)
 }
 
 func CorsMiddleware(frontendURL string) Middleware {
@@ -104,7 +105,6 @@ func Auth(us UserStore, excludedPaths []string) Middleware {
 			if err != nil {
 				switch {
 				case errors.Is(err, sql.ErrNoRows):
-					println(token.AccessToken)
 					user, err = us.InsertUser(oauthUser.Username, token.AccessToken)
 					if err != nil {
 						api.ServerErrorResponse(w, r, err)
@@ -113,6 +113,14 @@ func Auth(us UserStore, excludedPaths []string) Middleware {
 				default:
 					api.ForbiddenResponse(w, r, errExpiredToken)
 					return
+				}
+			} else {
+				if user.GithubPAT != token.AccessToken {
+					user, err = us.UpdateUserToken(oauthUser.Username, token.AccessToken)
+					if err != nil {
+						api.ServerErrorResponse(w, r, err)
+						return
+					}
 				}
 			}
 
