@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/cicompanion/api"
+	"github.com/cicompanion/api/server"
 	"github.com/cicompanion/data"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/oauth2"
@@ -27,6 +27,7 @@ var (
 
 type UserStore interface {
 	GetUser(username string) (*data.User, error)
+	GetUserByToken(token string) (*data.User, error)
 	InsertUser(username, githubPat string) (*data.User, error)
 	UpdateUserToken(username, githubPat string) (*data.User, error)
 }
@@ -69,7 +70,7 @@ func Auth(us UserStore, excludedPaths []string) Middleware {
 			if len(c) == 0 {
 				fields = strings.Fields(r.Header.Get(authorizationHeader))
 				if len(fields) < 2 {
-					api.ForbiddenResponse(w, r, errInvalidToken)
+					server.ForbiddenResponse(w, r, errInvalidToken)
 					return
 				}
 			} else {
@@ -79,7 +80,7 @@ func Auth(us UserStore, excludedPaths []string) Middleware {
 
 			authorizationType := strings.ToLower(fields[0])
 			if authorizationType != authorizationPrefix {
-				api.ForbiddenResponse(w, r, errInvalidToken)
+				server.ForbiddenResponse(w, r, errInvalidToken)
 				return
 			}
 
@@ -88,43 +89,49 @@ func Auth(us UserStore, excludedPaths []string) Middleware {
 			}
 
 			// validate token
-			oauthUser, err := api.GetUserData(token)
+			oauthUser, err := server.GetUserData(token)
 			if err != nil {
 				switch {
 				case errors.Is(err, jwt.ErrTokenExpired):
 					slog.Info("token is expired")
-					api.ForbiddenResponse(w, r, errExpiredToken)
+					server.ForbiddenResponse(w, r, errExpiredToken)
 					return
 				default:
-					api.ForbiddenResponse(w, r, errExpiredToken)
+					server.ForbiddenResponse(w, r, errExpiredToken)
 					return
 				}
 			}
 
-			user, err := us.GetUser(oauthUser.Username)
+			user, err := us.GetUserByToken(token.AccessToken)
+			if err == nil && user.Role == "ADMIN" {
+				next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), server.ContextUser, user)))
+				return
+			}
+
+			user, err = us.GetUser(oauthUser.Username)
 			if err != nil {
 				switch {
 				case errors.Is(err, sql.ErrNoRows):
 					user, err = us.InsertUser(oauthUser.Username, token.AccessToken)
 					if err != nil {
-						api.ServerErrorResponse(w, r, err)
+						server.ServerErrorResponse(w, r, err)
 						return
 					}
 				default:
-					api.ForbiddenResponse(w, r, errExpiredToken)
+					server.ForbiddenResponse(w, r, errExpiredToken)
 					return
 				}
 			} else {
-				if user.GithubPAT != token.AccessToken {
+				if user.GithubPAT != token.AccessToken && user.Role != "ADMIN" {
 					user, err = us.UpdateUserToken(oauthUser.Username, token.AccessToken)
 					if err != nil {
-						api.ServerErrorResponse(w, r, err)
+						server.ServerErrorResponse(w, r, err)
 						return
 					}
 				}
 			}
 
-			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), api.ContextUser, user)))
+			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), server.ContextUser, user)))
 		})
 	}
 }

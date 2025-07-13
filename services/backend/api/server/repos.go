@@ -1,4 +1,4 @@
-package api
+package server
 
 import (
 	"net/http"
@@ -8,22 +8,7 @@ import (
 	"github.com/cicompanion/githubapi"
 )
 
-type contextUserKey string
-
-const ContextUser = contextUserKey("ctxUser")
-
-type githubClient interface {
-	GetRepos(githubPat string) ([]githubapi.GithubRepo, error)
-	GetActions(githubPat string, repoId int) (*githubapi.GithubRepoActions, error)
-}
-
-type reposStore interface {
-	AddRepo(repo data.Repo, userId string) error
-	GetRepos(userId string) ([]data.Repo, error)
-	Deleterepo(repoId int, userId string) error
-}
-
-func (rt *Router) getUserRepos(w http.ResponseWriter, r *http.Request) {
+func (rt Router) getUserRepos(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(ContextUser).(*data.User)
 	repos, err := rt.gc.GetRepos(user.GithubPAT)
 	if err != nil {
@@ -48,7 +33,7 @@ func (rt *Router) createRepo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	WriteJSON(w, http.StatusAccepted, nil, nil)
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (rt *Router) deleteRepo(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +51,7 @@ func (rt *Router) deleteRepo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	WriteJSON(w, http.StatusOK, nil, nil)
+	w.WriteHeader(http.StatusOK)
 }
 
 type DashboardDTO struct {

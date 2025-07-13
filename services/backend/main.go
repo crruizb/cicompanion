@@ -10,8 +10,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/cicompanion/api"
 	"github.com/cicompanion/api/middleware"
+	"github.com/cicompanion/api/server"
 	"github.com/cicompanion/data"
 	"github.com/cicompanion/githubapi"
 	"github.com/golang-migrate/migrate/v4"
@@ -78,10 +78,11 @@ func main() {
 		Endpoint:     github.Endpoint,
 	}
 	rs := data.NewReposPostgresStore(db)
+	ms := data.NewMonitoringPostgresStore(db)
 	us := data.NewUsersPostgresStore(db)
 	gc := githubapi.NewGithubHttpClient()
 
-	rt := api.NewRouter(githubOauthConfig, gc, rs, config.frontendURL, config.backendDomain)
+	rt := server.NewRouter(githubOauthConfig, gc, rs, ms, config.frontendURL, config.backendDomain)
 
 	excludePrefix := []string{"/auth/github/login", "/auth/callback"}
 	mw := middleware.With(

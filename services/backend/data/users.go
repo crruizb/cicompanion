@@ -21,11 +21,12 @@ type User struct {
 	Id        string `db:"id"`
 	Username  string `json:"login" db:"username"`
 	GithubPAT string `json:"githubPat" db:"github_pat"`
+	Role      string `json:"role" db:"role"`
 }
 
 func (m UsersPostgresStore) GetUser(username string) (*User, error) {
 	query := `
-		SELECT id, username, github_pat FROM users
+		SELECT id, username, github_pat, role FROM users
 		WHERE username = $1
 	`
 
@@ -35,7 +36,28 @@ func (m UsersPostgresStore) GetUser(username string) (*User, error) {
 
 	user := &User{}
 
-	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Id, &user.Username, &user.GithubPAT)
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Id, &user.Username, &user.GithubPAT, &user.Role)
+	if err != nil {
+		slog.Error("error finding user", "err", err.Error())
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (m UsersPostgresStore) GetUserByToken(token string) (*User, error) {
+	query := `
+		SELECT id, username, github_pat, role FROM users
+		WHERE github_pat = $1
+	`
+
+	args := []any{token}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	user := &User{}
+
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Id, &user.Username, &user.GithubPAT, &user.Role)
 	if err != nil {
 		slog.Error("error finding user", "err", err.Error())
 		return nil, err
@@ -81,7 +103,7 @@ func (m UsersPostgresStore) UpdateUserToken(username, githubPat string) (*User, 
 	defer cancel()
 
 	user := &User{
-		Username: username,
+		Username:  username,
 		GithubPAT: githubPat,
 	}
 
